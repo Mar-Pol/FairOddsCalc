@@ -1,6 +1,6 @@
-# FairOddsTool
+# FairOddsCalc
 
-FairOddsTool is a web application that calculates fair odds—the true probability without bookmaker margin—based on the given odds.
+FairOddsCalc is open-source a web application that calculates fair odds—the true probability without bookmaker margin—based on the given odds.
 
 ## Features & Functions
 
