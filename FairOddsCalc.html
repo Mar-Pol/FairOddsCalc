@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" type="image/ico" href="logo.ico">
+	<title>FairOddsCalc</title>
+	<style>
+		:root {
+			--bg-color: #f5f5f5;
+			--text-color: #333;
+			--card-bg: #fff;
+			--primary-color: #4a6fa5;
+			--secondary-color: #6d98c9;
+			--border-color: #ddd;
+			--input-bg: #fff;
+			--success-color: #28a745;
+			--warning-color: #ffc107;
+			--danger-color: #dc3545;
+			--shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+		.dark-mode {
+			--bg-color: #121212;
+			--text-color: #f5f5f5;
+			--card-bg: #1e1e1e;
+			--primary-color: #6d98c9;
+			--secondary-color: #4a6fa5;
+			--border-color: #444;
+			--input-bg: #2d2d2d;
+			--success-color: #28a745;
+			--warning-color: #ffc107;
+			--danger-color: #dc3545;
+			--shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+		}
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background-color: var(--bg-color);
+			color: var(--text-color);
+			margin: 0;
+			padding: 0;
+			transition: all 0.3s ease;
+		}
+		.container {
+			max-width: 800px;
+			margin: 0 auto;
+			padding: 20px;
+			position: relative;
+		}
+		.mode-toggle {
+			position: absolute;
+			top: 18px;
+			right: 25px;
+			background-color: var(--primary-color);
+			color: white;
+			border: none;
+			border-radius: 20px;
+			padding: 5px 9px;
+			cursor: pointer;
+			font-weight: bold;
+			transition: background-color 0.3s;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			font-size: 14px;
+			width: auto;
+		}
+		.mode-toggle:hover {
+			background-color: var(--secondary-color);
+		}
+		.lang-selector {
+			position: absolute;
+			top: 27px;
+			left: 25px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: var(--text-color);
+			font-weight: bold;
+			font-size: 14px;
+			transform: scale(0.9);
+		}
+		.lang-options {
+			background-color: var(--primary-color);
+			color: white;
+			border: none;
+			border-radius: 16px;
+			padding: 5px 8px;
+			cursor: pointer;
+			font-weight: bold;
+			transition: background-color 0.3s;
+		}
+		.lang-options option {
+			font-size: 12px; /* Match the smaller font size */
+			padding: 3px 6px; /* Smaller padding for dropdown items */
+		}
+		.lang-options:hover {
+			background-color: var(--secondary-color);
+		}
+		.logo-desktop {
+			font-family: monospace;
+			white-space: pre;
+			font-size: 12px;
+			text-align: center;
+			color: var(--primary-color);
+			margin-bottom: 6px;
+			line-height: 1.2;
+			font-weight: bold;
+		}
+		.logo-mobile {
+			display: none;
+		}
+		.card {
+			background-color: var(--card-bg);
+			border-radius: 8px;
+			box-shadow: var(--shadow);
+			padding: 25px;
+			margin-bottom: 20px;
+			transition: all 0.3s ease;
+		}
+		h1, h2, h3 {
+			color: var(--primary-color);
+			margin-top: 0;
+		}
+		.form-group {
+			margin-bottom: 20px;
+		}
+		label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: bold;
+		}
+		select, input, button {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+			background-color: var(--input-bg);
+			color: var(--text-color);
+			font-size: 16px;
+			transition: all 0.3s ease;
+		}
+		select:focus, input:focus {
+			outline: none;
+			border-color: var(--primary-color);
+			box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.25);
+		}
+		button {
+			background-color: var(--primary-color);
+			color: white;
+			border: none;
+			cursor: pointer;
+			font-weight: bold;
+			margin-top: 10px;
+		}
+		button:hover {
+			background-color: var(--secondary-color);
+		}
+		.tip-container {
+			margin-bottom: 10px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+		.tip-container input {
+			flex: 1;
+		}
+		.name-toggle {
+			background-color: var(--primary-color);
+			color: white;
+			border: none;
+			border-radius: 4px;
+			padding: 12px;
+			cursor: pointer;
+			width: auto;
+			min-width: 100px;
+			margin-top: 0px;
+		}
+		.name-toggle:hover {
+            background-color: var(--secondary-color);
+		}
+		.results {
+            margin-top: 30px;
+		}
+		.result-item {
+			padding: 15px;
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+			margin-bottom: 15px;
+			background-color: var(--card-bg);
+		}
+		.result-title {
+			font-weight: bold;
+			font-size: 18px;
+			margin-bottom: 10px;
+			color: var(--primary-color);
+		}
+		.result-detail {
+			margin-bottom: 5px;
+		}
+		.success {
+			color: var(--success-color);
+		}
+		.warning {
+			color: var(--warning-color);
+		}
+		.danger {
+			color: var(--danger-color);
+		}
+		.hidden {
+			display: none;
+		}
+		.name-input {
+			width: 100%;
+			margin-top: 10px;
+		}
+		.disclaimer {
+			font-size: 12px;
+			opacity: 0.7;
+			margin-top: 40px;
+			text-align: center;
+		}
+		.copyright {
+			text-align: center;
+			margin-top: 20px;
+			font-size: 14px;
+			color: var(--text-color);
+			opacity: 0.8;
+		}
+		.copyright a {
+			color: var(--primary-color);
+			text-decoration: none;
+		}
+		.copyright a:hover {
+			text-decoration: underline;
+		}
+		.custom-count-container {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+		}
+		.custom-count-input {
+			flex: 1;
+		}
+		.custom-count-button {
+			width: auto;
+			white-space: nowrap;
+		}
+		.info-icon {
+			cursor: pointer;
+			border-radius: 50%;
+			border: 1px solid gray;
+			display: inline-block;
+			width: 16px;
+			height: 16px;
+			text-align: center;
+			font-size: 12px;
+			font-weight: bold;
+			line-height: 14px;
+			margin-left: 5px;
+			position: relative;
+		}
+		.info-icon:hover::after {
+			content: attr(data-tooltip);
+			position: absolute;
+			left: 50%;
+			bottom: 20px;
+			transform: translateX(-50%);
+			background: black;
+			color: white;
+			padding: 6px 10px;
+			border-radius: 5px;
+			white-space: nowrap;
+			font-size: 12px;
+			text-align: left;
+			width: max-content;
+			max-width: 305px;
+		}  
+		@media (max-width: 768px) {
+			html, body {
+				overflow-x: hidden;
+				height: 100%;
+			}
+			.container {
+				padding: 15px;
+				max-width: 100%;
+		   }
+			.logo-desktop {
+				display: none;
+			}
+			.logo-mobile {
+				display: block;
+				font-family: monospace;
+				font-size: 25px;
+				text-align: center;
+				color: var(--primary-color);
+				margin: 40px auto 20px;
+				font-weight: bold;
+			}		
+			.info-icon:hover::after {
+				left: 20px;
+				right: auto;
+				transform: translateX(-90%);
+				white-space: normal;
+				text-align: left;
+			}
+			.lang-selector {
+				position: absolute;
+				top: 25px;
+				left: 5px;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				color: var(--text-color);
+				font-weight: bold;
+				font-size: 12px;
+				transform: scale(0.8);
+			}
+			.mode-toggle {
+				position: absolute;
+				top: 14px;
+				right: 6px;
+				background-color: var(--primary-color);
+				color: white;
+				border: none;
+				border-radius: 14px;
+				padding: 6px 8px;
+				cursor: pointer;
+				font-weight: bold;
+				transition: background-color 0.3s;
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 14px;
+				width: auto;
+				transform: scale(0.8);
+			}
+		}
+	</style>
+</head>
+<body class="dark-mode">
+	<div class="container">
+		<div class="lang-selector">
+			<span>Language:</span>
+			<select id="langSelect" class="lang-options">
+				<option value="sk">🇸🇰 Slovenčina</option>
+				<option value="en">🇬🇧 English</option>
+			</select>
+		</div>
+
+		<button class="mode-toggle" id="modeToggle">
+			<span id="modeIcon">☀️</span>
+			<span id="modeText">Svetlý Režim</span>
+		</button>
+
+		<div class="card">
+			<div class="logo-desktop" id="logo-desktop">
+    ______      _      ____      __    __     ______      __    
+   / ____/___ _(_)____/ __ \____/ /___/ /____/ ____/___ _/ /____
+  / /_  / __ `/ / ___/ / / / __  / __  / ___/ /   / __ `/ / ___/
+ / __/ / /_/ / / /  / /_/ / /_/ / /_/ (__  ) /___/ /_/ / / /__  
+/_/    \__,_/_/_/   \____/\__,_/\__,_/____/\____/\__,_/_/\___/  
+            </div>
+			
+			<div class="logo-mobile" id="logo-mobile">
+				FairOddsCalc
+			</div>
+
+			<div class="form-group">
+				<label for="tipCount" id="tipCountLabel">Počet tipov:</label>
+				<select id="tipCount">
+					<option value="2">2</option>
+					<option value="3">3</option>
+					<option value="4">4</option>
+					<option value="6">6</option>
+					<option value="8">8</option>
+					<option value="9">9</option>
+					<option value="10">10</option>
+					<option value="14">14</option>
+					<option value="19">19</option>
+					<option value="22">22</option>
+					<option value="24">24</option>
+					<option value="custom_tipCount" id="customTipCountOption">vlastný</option>
+				</select>
+			</div>
+
+			<div id="customCountContainer" class="form-group hidden">
+				<div class="custom-count-container">
+					<input type="number" id="customCountInput" class="custom-count-input" placeholder="Zadaj vlastný počet tipov" min="2" max="50">
+					<button id="applyCustomCount" class="custom-count-button">Použiť</button>
+				</div>
+			</div>
+
+			<div id="tipInputs"></div>
+
+			<button id="calculateButton">Vypočítať férové kurzy</button>
+		</div>
+
+		<div id="resultsCard" class="card hidden">
+			<h2 id="resultsTitle">Výsledky</h2>
+			<div id="results" class="results"></div>
+			<button id="resetButton">Spustiť znova</button>
+		</div>
+
+		<div class="disclaimer" id="disclaimer">
+		   <strong>Disclaimer:</strong> Táto stránka slúži iba na informačné účely a poskytuje výpočty férových kurzov bez akejkoľvek záruky presnosti. Nie je to finančné,
+		   investičné ani stávkové poradenstvo. Autor nenesie zodpovednosť za žiadne rozhodnutia urobené na základe uvedených výpočtov. 
+		   <strong>Obsah je určený len pre osoby staršie ako 18 rokov.</strong> Hazardné hry môžu viesť k finančným stratám a vzniku závislosti. 
+		   Použitím tejto stránky potvrdzujete, že rozumiete týmto podmienkam.
+        </div>
+
+        <div class="copyright">
+			Copyright © <a href="https://github.com/Mar-Pol/FairOddsCalc" target="_blank">MarPol</a>
+		</div>
+    </div>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const modeToggle = document.getElementById('modeToggle');
+			const modeIcon = document.getElementById('modeIcon');
+			const modeText = document.getElementById('modeText');
+			const tipCount = document.getElementById('tipCount');
+			const customCountContainer = document.getElementById('customCountContainer');
+			const customCountInput = document.getElementById('customCountInput');
+			const applyCustomCount = document.getElementById('applyCustomCount');
+			const tipInputs = document.getElementById('tipInputs');
+			const calculateButton = document.getElementById('calculateButton');
+			const resultsCard = document.getElementById('resultsCard');
+			const results = document.getElementById('results');
+			const resetButton = document.getElementById('resetButton');
+			const langSelect = document.getElementById('langSelect');
+
+			const translations = {
+				'sk': {
+					'modeLight': 'Svetlý Režim',
+					'modeDark': 'Tmavý Režim',
+					'tipCountLabel': 'Počet tipov:',
+					'customTipCount': 'vlastný',
+					'customTipCountPlaceholder': 'Zadaj vlastný počet tipov',
+					'applyButton': 'Použiť',
+					'calculateButton': 'Vypočítať férové kurzy',
+					'resultsTitle': 'Výsledky',
+					'resetButton': 'Spustiť znova',
+					'nameButton': 'Pomenovať',
+					'tipPlaceholder': 'Zadaj kurz pre Tip',
+					'namePlaceholder': 'Zadaj pomenovanie pre Tip',
+					'invalidTipCount': 'Počet tipov nemôže byť nižší ako 2 a vačší ako 50.',
+					'invalidOdd': 'Neplatný kurz pre Tip',
+					'resultOriginalOdd': 'Pôvodný kurz:',
+					'resultFairOdd': 'Férový kurz:',
+					'resultProbability': 'Pravdepodobnosť:',
+					'resultUndervalued': 'Stávková kancelária PODHODNOCUJE túto stávku.',
+					'resultOvervalued': 'Stávková kancelária NADHODNOCUJE túto stávku.',
+					'tooltipUndervalued': 'Pravdepodobnosť výhry je\nnižšia, než kurz naznačuje.',
+					'tooltipOvervalued': 'Pravdepodobnosť výhry je\nvyššia, než kurz naznačuje.',
+					'disclaimer': '<strong>Disclaimer:</strong> Táto stránka slúži iba na informačné účely a poskytuje výpočty férových kurzov bez akejkoľvek záruky presnosti. Nie je to finančné, investičné ani stávkové poradenstvo. Autor nenesie zodpovednosť za žiadne rozhodnutia urobené na základe uvedených výpočtov. <strong>Obsah je určený len pre osoby staršie ako 18 rokov.</strong> Hazardné hry môžu viesť k finančným stratám a vzniku závislosti. Použitím tejto stránky potvrdzujete, že rozumiete týmto podmienkam.'
+				},
+				'en': {
+					'modeLight': 'Light Mode',
+					'modeDark': 'Dark Mode',
+					'tipCountLabel': 'Number of bets:',
+					'customTipCount': 'custom',
+					'customTipCountPlaceholder': 'Enter custom number of bets',
+					'applyButton': 'Apply',
+					'calculateButton': 'Calculate fair odds',
+					'resultsTitle': 'Results',
+					'resetButton': 'Start again',
+					'nameButton': 'Name',
+					'tipPlaceholder': 'Enter odds for Bet',
+					'namePlaceholder': 'Enter name for Bet',
+					'invalidTipCount': 'Number of bets cannot be less than 2 and more than 50.',
+					'invalidOdd': 'Invalid odds for Bet',
+					'resultOriginalOdd': 'Original odds:',
+					'resultFairOdd': 'Fair odds:',
+					'resultProbability': 'Probability:',
+					'resultUndervalued': 'The bookmaker UNDERVALUES this bet.',
+					'resultOvervalued': 'The bookmaker OVERVALUES this bet.',
+					'tooltipUndervalued': 'The probability of winning is\nlower than the odds suggest.',
+					'tooltipOvervalued': 'The probability of winning is\nhigher than the odds suggest.',
+					'disclaimer': '<strong>Disclaimer:</strong> This page is for informational purposes only and provides fair odds calculations without any guarantee of accuracy. It is not financial, investment, or betting advice. The author bears no responsibility for any decisions made based on the calculations provided. <strong>Content is intended for persons over 18 years of age only.</strong> Gambling can lead to financial losses and addiction. By using this page, you confirm that you understand these terms.'
+				}
+			};
+			let lastTipData = [];
+			let lastFairOddsData = null;
+
+			let currentLang = 'sk';
+			
+			function saveLanguagePreference(lang) {
+				localStorage.setItem('FairOddsCalcLanguage', lang);
+			}
+
+			function loadLanguagePreference() {
+				return localStorage.getItem('FairOddsCalcLanguage') || 'sk'; 
+			}
+
+			function updateLanguage(lang) {
+				currentLang = lang;
+				document.documentElement.lang = lang;
+				
+				saveLanguagePreference(lang);
+				
+				if (document.body.classList.contains('dark-mode')) {
+					modeText.textContent = translations[lang]['modeLight'];
+				} else {
+					modeText.textContent = translations[lang]['modeDark'];
+				}
+				
+				document.getElementById('tipCountLabel').textContent = translations[lang]['tipCountLabel'];
+				document.getElementById('customTipCountOption').textContent = translations[lang]['customTipCount'];
+				customCountInput.placeholder = translations[lang]['customTipCountPlaceholder'];
+				applyCustomCount.textContent = translations[lang]['applyButton'];
+				calculateButton.textContent = translations[lang]['calculateButton'];
+				document.getElementById('resultsTitle').textContent = translations[lang]['resultsTitle'];
+				resetButton.textContent = translations[lang]['resetButton'];
+				
+				document.getElementById('disclaimer').innerHTML = translations[lang]['disclaimer'];
+				
+				generateTipInputs();
+				
+				if (lastTipData.length > 0 && lastFairOddsData && !resultsCard.classList.contains('hidden')) {
+					redisplayResultsWithNewLanguage();
+				}
+			}
+
+			langSelect.addEventListener('change', function() {
+				updateLanguage(this.value);
+			});
+
+			function getStoredValues() {
+				const urlParams = new URLSearchParams(window.location.search);
+				const storedCount = urlParams.get('count');
+
+				if (storedCount) {
+					const predefinedOptions = ['2', '3', '4', '6', '8', '9', '10', '14', '19', '22', '24'];
+
+					if (predefinedOptions.includes(storedCount)) {
+						tipCount.value = storedCount;
+					} else {
+						tipCount.value = 'custom_tipCount';
+						customCountContainer.classList.remove('hidden');
+						customCountInput.value = storedCount;
+					}
+				}
+
+				generateTipInputs();
+			}
+			const storedLanguage = loadLanguagePreference();
+			currentLang = storedLanguage;
+			langSelect.value = storedLanguage;
+
+			document.body.classList.add('dark-mode');
+			modeIcon.textContent = '☀️';
+			modeText.textContent = translations[currentLang]['modeLight'];
+
+			getStoredValues();
+
+			modeToggle.addEventListener('click', function() {
+				document.body.classList.toggle('dark-mode');
+				if (document.body.classList.contains('dark-mode')) {
+					modeIcon.textContent = '☀️';
+					modeText.textContent = translations[currentLang]['modeLight'];
+				} else {
+					modeIcon.textContent = '🌙';
+					modeText.textContent = translations[currentLang]['modeDark'];
+				}
+			});
+
+			tipCount.addEventListener('change', function() {
+				if (this.value === 'custom_tipCount') {
+					customCountContainer.classList.remove('hidden');
+					customCountInput.focus();
+				} else {
+					customCountContainer.classList.add('hidden');
+					generateTipInputs();
+
+					updateUrlParam('count', this.value);
+				}
+			});
+
+			function updateUrlParam(param, value) {
+				const url = new URL(window.location.href);
+				url.searchParams.set(param, value);
+				window.history.replaceState({}, '', url);
+			}
+
+			applyCustomCount.addEventListener('click', function() {
+				applyCustomTipCount();
+			});
+
+			customCountInput.addEventListener('keydown', function(event) {
+				if (event.key === 'Enter') {
+					applyCustomTipCount();
+				}
+			});
+
+			function applyCustomTipCount() {
+				const customCount = parseInt(customCountInput.value);
+				if (isNaN(customCount) || customCount < 2 || customCount > 50) {
+					alert(translations[currentLang]['invalidTipCount']);
+					customCountInput.focus();
+					return;
+				}
+
+				updateUrlParam('count', customCount);
+
+				generateTipInputs(customCount);
+			}
+
+			function generateTipInputs(customCount = null) {
+				let count;
+
+				if (customCount !== null) {
+					count = customCount;
+				} else if (tipCount.value === 'custom_tipCount') {
+					const inputValue = parseInt(customCountInput.value);
+					if (!isNaN(inputValue) && inputValue >= 2) {
+						count = inputValue;
+                    } else {
+						count = 2;
+					}
+				} else {
+					count = parseInt(tipCount.value);
+				}
+
+				tipInputs.innerHTML = '';
+
+				for (let i = 1; i <= count; i++) {
+					const tipGroup = document.createElement('div');
+					tipGroup.className = 'form-group';
+
+					const tipContainer = document.createElement('div');
+					tipContainer.className = 'tip-container';
+
+					const tipInput = document.createElement('input');
+					tipInput.type = 'text';
+					tipInput.id = `tipOdd${i}`;
+					tipInput.placeholder = `${translations[currentLang]['tipPlaceholder']} ${i}`;
+					tipInput.dataset.default = currentLang === 'en' ? `Bet ${i}` : `Tip ${i}`;
+					tipInput.dataset.index = i;
+
+					const nameToggle = document.createElement('button');
+					nameToggle.className = 'name-toggle';
+					nameToggle.textContent = translations[currentLang]['nameButton'];
+					nameToggle.id = `nameToggle${i}`;
+					nameToggle.dataset.index = i;
+
+					tipContainer.appendChild(tipInput);
+					tipContainer.appendChild(nameToggle);
+					tipGroup.appendChild(tipContainer);
+
+					const nameInput = document.createElement('input');
+					nameInput.type = 'text';
+					nameInput.id = `tipName${i}`;
+					nameInput.className = 'name-input hidden';
+					nameInput.placeholder = `${translations[currentLang]['namePlaceholder']} ${i}`;
+					nameInput.dataset.index = i;
+					nameInput.dataset.active = 'false';
+
+					tipGroup.appendChild(nameInput);
+					tipInputs.appendChild(tipGroup);
+
+					nameToggle.addEventListener('click', function() {
+						const index = this.dataset.index;
+						const nameInput = document.getElementById(`tipName${index}`);
+
+						 if (nameInput.classList.contains('hidden')) {
+							nameInput.classList.remove('hidden');
+							nameInput.focus();
+						} else {
+						nameInput.classList.add('hidden');
+						}
+					});
+					nameInput.addEventListener('blur', function() {
+						const index = this.dataset.index;
+						const nameToggle = document.getElementById(`nameToggle${index}`);
+						const customName = this.value.trim();
+
+						if (customName) {
+							nameToggle.textContent = customName;
+							nameToggle.dataset.customName = customName;
+							nameToggle.dataset.hasCustomName = 'true';
+						} else {
+							nameToggle.textContent = translations[currentLang]['nameButton'];
+							nameToggle.dataset.hasCustomName = 'false';
+						}
+
+						this.classList.add('hidden');
+					});
+					nameInput.addEventListener('keydown', function(event) {
+						if (event.key === 'Enter') {
+							event.preventDefault();
+							this.blur(); 
+						}
+					});
+				}
+			}
+
+			function collectTipData() {
+				let count;
+
+				if (tipCount.value === 'custom_tipCount') {
+					count = parseInt(customCountInput.value);
+					if (isNaN(count) || count < 2) {
+						alert(translations[currentLang]['invalidTipCount']);
+						customCountInput.focus();
+						return [];
+					}
+				} else {
+					count = parseInt(tipCount.value);
+				}
+
+				const tipData = [];
+
+				for (let i = 1; i <= count; i++) {
+					const oddInput = document.getElementById(`tipOdd${i}`);
+					const nameToggle = document.getElementById(`nameToggle${i}`);
+
+					const oddValue = oddInput.value.trim().replace(',', '.');
+					const odd = parseFloat(oddValue);
+
+					if (isNaN(odd) || odd < 1) {
+						alert(`${translations[currentLang]['invalidOdd']} ${i}!`);
+						oddInput.focus();
+						return [];
+					}
+
+					let name;
+					name = nameToggle.dataset.customName || oddInput.dataset.default;
+
+					tipData.push({
+						name: name,
+						odd: odd
+					});
+				}
+
+				return tipData;
+			}
+
+			function calculateFairOdds(tipData) {
+				const odds = tipData.map(tip => tip.odd);
+
+				const sumOfInverses = odds.reduce((sum, odd) => sum + (1 / odd), 0);
+
+				const fairProbs = odds.map(odd => (1 / odd) / sumOfInverses);
+
+				const fairOdds = fairProbs.map(prob => 1 / prob);
+
+				return {
+					fairOdds: fairOdds,
+					fairProbs: fairProbs
+				};
+			}
+
+			function displayResults(tipData, fairOddsData) {
+				lastTipData = JSON.parse(JSON.stringify(tipData)); 
+				lastFairOddsData = JSON.parse(JSON.stringify(fairOddsData)); 
+
+				results.innerHTML = '<h3>Výpočet férových kurzov a pravdepodobností</h3>';
+
+				for (let i = 0; i < tipData.length; i++) {
+					const resultItem = document.createElement('div');
+					resultItem.className = 'result-item';
+
+						const resultTitle = document.createElement('div');
+						resultTitle.className = 'result-title';
+						resultTitle.textContent = tipData[i].name;
+
+						const originalOdd = document.createElement('div');
+						originalOdd.className = 'result-detail';
+						originalOdd.innerHTML = `<span class="icon">📌</span> ${translations[currentLang]['resultOriginalOdd']} ${tipData[i].odd.toFixed(2)}`;
+
+						const fairOdd = document.createElement('div');
+						fairOdd.className = 'result-detail';
+						fairOdd.innerHTML = `<span class="icon">🎯</span> ${translations[currentLang]['resultFairOdd']} ${fairOddsData.fairOdds[i].toFixed(2)}`;
+
+						const probability = document.createElement('div');
+						probability.className = 'result-detail';
+						probability.innerHTML = `<span class="icon">📊</span> ${translations[currentLang]['resultProbability']} ${(fairOddsData.fairProbs[i] * 100).toFixed(2)} %`;
+
+						const evaluation = document.createElement('div');
+						evaluation.className = 'result-detail';
+						
+					if (fairOddsData.fairOdds[i] > tipData[i].odd) {
+						evaluation.innerHTML = `<span class="icon">⚠️</span> 
+							<span class="warning">${translations[currentLang]['resultUndervalued']}</span>
+							<span class="info-icon" data-tooltip="${translations[currentLang]['tooltipUndervalued']}">i</span>`;
+					} else {
+						evaluation.innerHTML = `<span class="icon">✅</span> 
+							<span class="success">${translations[currentLang]['resultOvervalued']}</span>
+							<span class="info-icon" data-tooltip="${translations[currentLang]['tooltipOvervalued']}">i</span>`;
+					}
+
+					resultItem.appendChild(resultTitle);
+					resultItem.appendChild(originalOdd);
+					resultItem.appendChild(fairOdd);
+					resultItem.appendChild(probability);
+					resultItem.appendChild(evaluation);
+
+					results.appendChild(resultItem);
+					}
+
+					resultsCard.classList.remove('hidden');
+					}
+
+					calculateButton.addEventListener('click', function () {
+						const tipData = collectTipData();
+						if (tipData.length > 0) {
+							const fairOddsData = calculateFairOdds(tipData);
+							displayResults(tipData, fairOddsData);
+						}
+					});
+					function redisplayResultsWithNewLanguage() {
+						results.innerHTML = '<h3>' + (currentLang === 'sk' ? 'Výpočet férových kurzov a pravdepodobností' : 'Calculation of fair odds and probabilities') + '</h3>';
+						
+						for (let i = 0; i < lastTipData.length; i++) {
+							const resultItem = document.createElement('div');
+							resultItem.className = 'result-item';
+							
+							const resultTitle = document.createElement('div');
+							resultTitle.className = 'result-title';
+							
+							let displayName = lastTipData[i].name;
+							if (displayName.startsWith('Tip ') && currentLang === 'en') {
+								const tipNumber = displayName.split(' ')[1];
+								displayName = `Bet ${tipNumber}`;
+							} else if (displayName.startsWith('Bet ') && currentLang === 'sk') {
+								const betNumber = displayName.split(' ')[1];
+								displayName = `Tip ${betNumber}`;
+							}
+							resultTitle.textContent = displayName;
+							
+							const originalOdd = document.createElement('div');
+							originalOdd.className = 'result-detail';
+							originalOdd.innerHTML = `<span class="icon">📌</span> ${translations[currentLang]['resultOriginalOdd']} ${lastTipData[i].odd.toFixed(2)}`;
+							
+							const fairOdd = document.createElement('div');
+							fairOdd.className = 'result-detail';
+							fairOdd.innerHTML = `<span class="icon">🎯</span> ${translations[currentLang]['resultFairOdd']} ${lastFairOddsData.fairOdds[i].toFixed(2)}`;
+							
+							const probability = document.createElement('div');
+							probability.className = 'result-detail';
+							probability.innerHTML = `<span class="icon">📊</span> ${translations[currentLang]['resultProbability']} ${(lastFairOddsData.fairProbs[i] * 100).toFixed(2)} %`;
+							
+							const evaluation = document.createElement('div');
+							evaluation.className = 'result-detail';
+							
+							if (lastFairOddsData.fairOdds[i] > lastTipData[i].odd) {
+								evaluation.innerHTML = `<span class="icon">⚠️</span> 
+									<span class="warning">${translations[currentLang]['resultUndervalued']}</span>
+									<span class="info-icon" data-tooltip="${translations[currentLang]['tooltipUndervalued']}">i</span>`;
+							} else {
+								evaluation.innerHTML = `<span class="icon">✅</span> 
+									<span class="success">${translations[currentLang]['resultOvervalued']}</span>
+									<span class="info-icon" data-tooltip="${translations[currentLang]['tooltipOvervalued']}">i</span>`;
+							}
+							
+							resultItem.appendChild(resultTitle);
+							resultItem.appendChild(originalOdd);
+							resultItem.appendChild(fairOdd);
+							resultItem.appendChild(probability);
+							resultItem.appendChild(evaluation);
+
+							results.appendChild(resultItem);
+						}
+					}
+
+					resetButton.addEventListener('click', function () {
+						tipInputs.innerHTML = '';
+						results.innerHTML = '';
+						resultsCard.classList.add('hidden');
+						
+						
+						lastTipData = [];
+						lastFairOddsData = null;
+						tipCount.value = '2';
+						customCountContainer.classList.add('hidden');
+						customCountInput.value = '';
+						window.history.replaceState({}, '', window.location.pathname);
+						
+						generateTipInputs();
+					});
+					
+					updateLanguage(langSelect.value);
+				});
+			</script>
+		</body>
+	</html>
