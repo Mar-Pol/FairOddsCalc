@@ -1,4 +1,4 @@
-FairOddsTool je webstránka, ktorá umožňuje vypočítať férové kurzy – skutočnú pravdepodobnosť bez marže na základe pôvodných kurzov.
+FairOddsCalc je webstránka, ktorá umožňuje vypočítať férové kurzy – skutočnú pravdepodobnosť bez marže na základe pôvodných kurzov.
 
 VLASTNOSTI & FUNKCIE STRÁNKY:
 
