@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fairoddscalc.netlify.app/sitemap.xml
